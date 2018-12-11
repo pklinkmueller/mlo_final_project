@@ -1,0 +1,3 @@
+https://archive.ics.uci.edu/ml/datasets/banknote+authentication
+
+Last column - 0 == authentic, 1==forgery
