@@ -1,0 +1,4 @@
+covtype.binary from 
+https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html
+
+Based of of UCI covertype, but binarized via a paper referenced.
