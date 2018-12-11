@@ -1,0 +1,3 @@
+https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Diagnostic%29
+
+Check .names for column information. Important note: last column denotes benign (2) or malignant (4)
