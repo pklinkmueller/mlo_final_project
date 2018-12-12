@@ -45,7 +45,8 @@ class LogisticRegression(Model):
 
     def fit(self, X: np.ndarray, y: np.ndarray):
         self.w = np.zeros((X.shape[1], 1))
-        train(X, y, self, int(self.num_iter / 10))
+        lossData = train(X, y, self, int(self.num_iter / 10))
+        return lossData, self.w
 
     def predict(self, X: np.ndarray):
         return self.__sigmoid(np.dot(X, self.w))
@@ -57,7 +58,7 @@ def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int):
     start_idx = 0
     perm_idx = np.random.permutation(n)
     idx = range(n)
-
+    lossData = {}
     for i in range(model.num_iter):
         stop_idx = min(start_idx + model.batch_size, n)
         batch_idx = idx[int(start_idx):int(stop_idx)]
@@ -69,5 +70,7 @@ def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int):
         start_idx = stop_idx % n
         if i % print_iter == 0:
             print('Iter: {:8} batch loss: {:.3f}'.format(i, float(model.loss(bh, bY))))
+            lossData[i] = float(model.loss(bh, bY))
+    return lossData
 
 

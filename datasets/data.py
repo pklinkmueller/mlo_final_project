@@ -41,8 +41,10 @@ def load_wisconsin_breast_cancer() -> Tuple[np.ndarray, np.ndarray]:
     wbc_labels = wbc[:, -1]
     wbc_labels /= 2
     wbc_labels -= 1
+    wbc_labels = np.array(wbc_labels)
+    wbc_labels = np.reshape(wbc_labels, (-1, 1))
 
-    return np.array(wbc_features), np.array(wbc_labels)
+    return np.array(wbc_features), wbc_labels
 
 
 ####################################################################################################
