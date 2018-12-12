@@ -38,13 +38,14 @@ class LogisticRegression(Model):
         return 1 / (1 + np.exp(-z))
 
     def loss(self, h, y):
-        return -y * np.log(h) - (1 - y) * np.log(1 - h)
+        return np.dot(-y.T, np.log(h)) - np.dot((1 - y).T,np.log(1 - h))
 
     def grad(self, X, y):
         h = self.predict(X)
         return np.dot(X.T, (h - y)) / y.shape[0]
 
     def fit(self, X: np.ndarray, y: np.ndarray):
+        self.w = np.zeros((X.shape[1], 1))
         self.w = train(X, y, self, int(self.num_iter / 10))
 
     def predict(self, X: np.ndarray):
@@ -52,7 +53,7 @@ class LogisticRegression(Model):
 
 
 def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int):
-    w = np.zeros(X.shape[1])
+    w = np.zeros((X.shape[1], 1))
     n = X.shape[0]
     start_idx = 0
     perm_idx = np.random.permutation(n)
@@ -68,7 +69,7 @@ def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int):
         w = model.descent.update(w, grad)
         start_idx = stop_idx % n
         if i % print_iter == 0:
-            print('Iter: {:8} batch loss: {:.3f}'.format(i, model.loss(bh, bY)))
+            print('Iter: {:8} batch loss: {:.3f}'.format(i, float(model.loss(bh, bY))))
 
     return w
 

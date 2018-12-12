@@ -25,7 +25,7 @@ class ExpDecayRate(LearningRate):
         self.iter += 1
         return self.eta
 
-class DescentAlgorithm:
+class DescentAlgorithm(FixedRate):
     @abstractmethod
     def update(self, w: np.ndarray, grad: np.ndarray):
         raise NotImplementedError
@@ -35,7 +35,7 @@ class GradientDescent(DescentAlgorithm):
         self.eta = eta
 
     def update(self, w: np.ndarray, grad: np.ndarray):
-        return w - self.eta.get_rate() * grad
+        return w - self.eta * grad
 
 class StochasticVarianceReducedGradientDescent(DescentAlgorithm):
     def __init__(self, eta: LearningRate, w_est: np.ndarray):
