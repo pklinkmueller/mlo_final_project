@@ -1,0 +1,5 @@
+https://www.kaggle.com/jsphyg/weather-dataset-rattle-package
+
+The target RainTomorrow means: Did it rain the next day? Yes or No.
+
+Note: You should exclude the variable Risk-MM when training your binary classification model. If you don't exclude it, you will leak the answers to your model and reduce its predictability.
