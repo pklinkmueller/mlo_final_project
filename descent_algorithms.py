@@ -20,7 +20,7 @@ class ExpDecayRate(LearningRate):
         self.gamma = gamma
         self.iter = 0
         
-    def rate(self):
+    def get_rate(self):
         self.eta *= (1. / (1. + self.gamma * self.iter))
         self.iter += 1
         return self.eta
