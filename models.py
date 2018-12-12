@@ -1,11 +1,12 @@
 import numpy as np
-from descent_algorithms import DescentAlgorithm
+from descent_algorithms import DescentAlgorithm, LearningRate
 from abc import ABCMeta, abstractmethod
+
 
 
 class Model:
     @abstractmethod
-    def __init__(self, descent: DescentAlgorithm, lr: float, num_iter: int, batch_size: int):
+    def __init__(self, descent: DescentAlgorithm, lr: LearningRate, num_iter: int, batch_size: int):
         self.lr = lr
         self.w = np.empty([1])
         self.descent = descent
@@ -30,7 +31,7 @@ class Model:
 
 
 class LogisticRegression(Model):
-    def __init__(self, descent: DescentAlgorithm, lr: float, num_iter: int, batch_size: int):
+    def __init__(self, descent: DescentAlgorithm, lr: LearningRate, num_iter: int, batch_size: int):
         super().__init__(descent, lr, num_iter, batch_size)
 
     @staticmethod
@@ -46,14 +47,14 @@ class LogisticRegression(Model):
 
     def fit(self, X: np.ndarray, y: np.ndarray):
         self.w = np.zeros((X.shape[1], 1))
-        self.w = train(X, y, self, int(self.num_iter / 10))
+        train(X, y, self, int(self.num_iter / 10))
 
     def predict(self, X: np.ndarray):
         return self.__sigmoid(np.dot(X, self.w))
 
 
 def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int):
-    w = np.zeros((X.shape[1], 1))
+    model.w = np.zeros((X.shape[1], 1))
     n = X.shape[0]
     start_idx = 0
     perm_idx = np.random.permutation(n)
@@ -66,10 +67,9 @@ def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int):
         bY = y[perm_idx[batch_idx], :]
         bh = model.predict(bX)
         grad = model.grad(bX, bY)
-        w = model.descent.update(w, grad)
+        model.w = model.descent.update(model.w, grad, model.lr.get_rate())
         start_idx = stop_idx % n
         if i % print_iter == 0:
             print('Iter: {:8} batch loss: {:.3f}'.format(i, float(model.loss(bh, bY))))
 
-    return w
 

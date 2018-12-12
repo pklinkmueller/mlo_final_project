@@ -31,11 +31,8 @@ class DescentAlgorithm(FixedRate):
         raise NotImplementedError
 
 class GradientDescent(DescentAlgorithm):
-    def __init__(self, eta: LearningRate):
-        self.eta = eta
-
-    def update(self, w: np.ndarray, grad: np.ndarray):
-        return w - self.eta * grad
+    def update(self, w: np.ndarray, grad: np.ndarray, eta: float):
+        return w - eta * grad
 
 class StochasticVarianceReducedGradientDescent(DescentAlgorithm):
     def __init__(self, eta: LearningRate, w_est: np.ndarray):
