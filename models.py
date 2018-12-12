@@ -2,8 +2,6 @@ import numpy as np
 from descent_algorithms import DescentAlgorithm, LearningRate
 from abc import ABCMeta, abstractmethod
 
-
-
 class Model:
     @abstractmethod
     def __init__(self, descent: DescentAlgorithm, lr: LearningRate, num_iter: int, batch_size: int):
@@ -67,7 +65,7 @@ def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int):
         bY = y[perm_idx[batch_idx], :]
         bh = model.predict(bX)
         grad = model.grad(bX, bY)
-        model.w = model.descent.update(model.w, grad, model.lr.get_rate())
+        model.w = model.descent.update(model, X, y)
         start_idx = stop_idx % n
         if i % print_iter == 0:
             print('Iter: {:8} batch loss: {:.3f}'.format(i, float(model.loss(bh, bY))))

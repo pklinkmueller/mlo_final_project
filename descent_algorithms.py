@@ -19,7 +19,7 @@ class ExpDecayRate(LearningRate):
         self.eta = eta
         self.gamma = gamma
         self.iter = 0
-        
+
     def get_rate(self):
         self.eta *= (1. / (1. + self.gamma * self.iter))
         self.iter += 1
@@ -27,19 +27,19 @@ class ExpDecayRate(LearningRate):
 
 class DescentAlgorithm(FixedRate):
     @abstractmethod
-    def update(self, w: np.ndarray, grad: np.ndarray):
+    def update(self, model, X, y):
         raise NotImplementedError
 
 class GradientDescent(DescentAlgorithm):
-    def update(self, w: np.ndarray, grad: np.ndarray, eta: float):
-        return w - eta * grad
+    def update(self, model, X, y):
+        return model.w - model.lr.get_rate() * model.grad(X, y)
 
 class StochasticVarianceReducedGradientDescent(DescentAlgorithm):
     def __init__(self, eta: LearningRate, w_est: np.ndarray):
         self.eta = eta
         self.w_est = w_est
     
-    def update(self, w: np.ndarray, grad: np.ndarray):
+    def update(self, model, X, y):
         raise NotImplementedError
 
 class NesterovAcceleratedDescent(DescentAlgorithm):
@@ -48,12 +48,12 @@ class NesterovAcceleratedDescent(DescentAlgorithm):
         self.yt = y0
         self.lam = 0
 
-    def update(self, w, grad):
+    def update(self, model, X, y):
         lam_next = (1 + sqrt(1 + 4 * self.lam**2)) / 2
         mu = (1 - self.lam) / lam_next
 
         # Update Rule
-        y_new = w - self.eta.get_rate() * grad
+        y_new = model.w - model.lr.get_rate() * model.grad(X, y)
         w_new = y_new + mu * (y_new - self.yt)
         self.yt = y_new
 
