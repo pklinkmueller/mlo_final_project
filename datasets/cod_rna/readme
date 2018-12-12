@@ -1,0 +1,14 @@
+https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html
+
+Features:
+Divide by 10 to get deltaG_total value computed by the Dynalign algorithm
+The length of shorter sequence
+'A' frequencies of sequence 1
+'U' frequencies of sequence 1
+'C' frequencies of sequence 1
+'A' frequencies of sequence 2
+'U' frequencies of sequence 2
+'C' frequencies of sequence 2
+# of classes: 2
+# of data: 59,535 / 271617 (validation) / 157413 (unused/remaining)
+# of features: 8
