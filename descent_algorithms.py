@@ -3,43 +3,14 @@ from abc import ABCMeta, abstractmethod
 from math import sqrt
 from random import randint
 
-
-class LearningRate:
-    @abstractmethod
-    def get_rate(self):
-        raise NotImplementedError
-
-
-class FixedRate(LearningRate):
-    def __init__(self, eta: float):
-        self.eta = eta
-
-    def get_rate(self):
-        return self.eta
-
-
-class ExpDecayRate(LearningRate):
-    def __init__(self, eta: float, gamma: float):
-        self.eta = eta
-        self.gamma = gamma
-        self.iter = 0
-
-    def get_rate(self):
-        self.eta *= (1. / (1. + self.gamma * self.iter))
-        self.iter += 1
-        return self.eta
-
-
 class DescentAlgorithm:
     @abstractmethod
     def update(self, model, X, y):
         raise NotImplementedError
 
-
 class GradientDescent(DescentAlgorithm):
     def update(self, model, X, y):
         return model.w - model.lr.get_rate() * model.grad(X, y)
-
 
 class StochasticVarianceReducedGradientDescent(DescentAlgorithm):
     def update(self, model, X, y):
@@ -66,7 +37,6 @@ class StochasticVarianceReducedGradientDescent(DescentAlgorithm):
 
         return w_t
 
-
 class NesterovAcceleratedDescent(DescentAlgorithm):
     def __init__(self):
         self.yt = 0
@@ -82,8 +52,9 @@ class NesterovAcceleratedDescent(DescentAlgorithm):
         # Update internal sequence
         self.lam = lam_next
         return w_new
+
 class MirrorDescent(DescentAlgorithm):
-    #using bregman divergence 
+    #using bregman divergence
     def update(self, model, X, y):
         #sum_w = np.dot((model.w).T, np.exp(-model.lr.get_rate() * model.grad(X, y)))
         sum_w = 1
