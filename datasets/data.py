@@ -24,6 +24,7 @@ def load_mammogram() -> Tuple[np.ndarray, np.ndarray]:
     mammogram_features = np.array(mammograms[:, :-1])
     mammogram_labels = np.array(mammograms[:, -1])
 
+    print(mammogram_features[0])
     return mammogram_features, mammogram_labels
 
 
@@ -71,7 +72,12 @@ def load_cod_rna() -> Tuple[np.ndarray, np.ndarray]:
     cod_labels = cod_labels + 1
     cod_labels /= 2
     
-    return np.array(cod_features), np.array(cod_labels)
+    cod_features = cod_features.toarray()
+    
+    cod_labels = np.array(cod_labels)
+    cod_labels = np.reshape(cod_labels, (-1,1))
+    
+    return cod_features, cod_labels
                                               
 ####################################################################################################
 # MNIST 1 and 3
@@ -91,8 +97,17 @@ def load_MNIST_13() -> Tuple[np.ndarray, np.ndarray]:
             indices.append(index)
             trimmed_labels.append(1) 
     trimmed_features = (x_train[i] for i in indices)
+    trimmed_features = list(trimmed_features)
+    trimmed_features = np.array(trimmed_features)
+    
+    trimmed_features = trimmed_features.reshape(trimmed_features.shape[0], 
+        trimmed_features.shape[1] * trimmed_features.shape[2])
+    
+    
+    trimmed_labels = np.array(trimmed_labels)
+    trimmed_labels = np.reshape(trimmed_labels, (-1, 1))
         
-    return np.array(trimmed_features), np.array(trimmed_labels)
+    return trimmed_features.astype(np.float32), trimmed_labels.astype(np.float32)
 
     
 
