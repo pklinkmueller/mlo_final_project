@@ -3,6 +3,8 @@ import pandas as pd
 import os
 from typing import Tuple
 from sklearn.datasets import load_svmlight_file
+from keras.datasets import mnist
+
 
 dir_path = os.path.dirname(__file__)
 
@@ -71,7 +73,28 @@ def load_cod_rna() -> Tuple[np.ndarray, np.ndarray]:
     
     return np.array(cod_features), np.array(cod_labels)
                                               
+####################################################################################################
+# MNIST 1 and 3
+# sample num: 12873
+def load_MNIST_13() -> Tuple[np.ndarray, np.ndarray]:
+    # the function by default returns a tuple with train, and tuple with test
+    (x_train, y_train), (x_test, y_test) = mnist.load_data()
+    
+    indices = []
+    trimmed_labels = []
+    
+    for index in range(y_train.size):
+        if y_train[index] == 1:
+            indices.append(index)
+            trimmed_labels.append(0)
+        elif y_train[index] == 3:
+            indices.append(index)
+            trimmed_labels.append(1) 
+    trimmed_features = (x_train[i] for i in indices)
+        
+    return np.array(trimmed_features), np.array(trimmed_labels)
 
+    
 
 ####################################################################################################
 # covtype.binary
