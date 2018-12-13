@@ -74,12 +74,10 @@ class NesterovAcceleratedDescent(DescentAlgorithm):
     def update(self, model, X, y):
         lam_next = (1 + sqrt(1 + 4 * self.lam**2)) / 2
         mu = (1 - self.lam) / lam_next
-
         # Update Rule
         y_new = model.w - model.lr.get_rate() * model.grad(X, y)
-        w_new = y_new + mu * (y_new - self.yt)
+        w_new = (1 - mu) * y_new + mu * self.yt
         self.yt = y_new
-
         # Update internal sequence
         self.lam = lam_next
         return w_new
