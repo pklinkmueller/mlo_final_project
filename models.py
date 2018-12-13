@@ -2,6 +2,7 @@ import numpy as np
 from descent_algorithms import DescentAlgorithm, LearningRate
 from abc import ABCMeta, abstractmethod
 
+
 class Model:
     @abstractmethod
     def __init__(self, descent: DescentAlgorithm, lr: LearningRate, num_iter: int, batch_size: int):
@@ -44,9 +45,9 @@ class LogisticRegression(Model):
         return np.dot(X.T, (h - y)) / y.shape[0]
 
     def fit(self, X: np.ndarray, y: np.ndarray):
-        self.w = np.zeros((X.shape[1], 1))
-        lossData = train(X, y, self, int(self.num_iter / 10))
-        return lossData, self.w
+        self.w = np.random.rand(X.shape[1], 1)
+        loss_data = train(X, y, self, int(self.num_iter / 10))
+        return loss_data
 
     def predict(self, X: np.ndarray):
         return self.__sigmoid(np.dot(X, self.w))
@@ -65,7 +66,6 @@ def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int):
         bX = X[perm_idx[batch_idx], :]
         bY = y[perm_idx[batch_idx], :]
         bh = model.predict(bX)
-        grad = model.grad(bX, bY)
         model.w = model.descent.update(model, X, y)
         start_idx = stop_idx % n
         if i % print_iter == 0:

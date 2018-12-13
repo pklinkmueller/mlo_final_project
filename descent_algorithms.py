@@ -3,10 +3,12 @@ from abc import ABCMeta, abstractmethod
 from math import sqrt
 from random import randint
 
+
 class LearningRate:
     @abstractmethod
     def get_rate(self):
         raise NotImplementedError
+
 
 class FixedRate(LearningRate):
     def __init__(self, eta: float):
@@ -14,6 +16,7 @@ class FixedRate(LearningRate):
     
     def get_rate(self):
         return self.eta
+
 
 class ExpDecayRate(LearningRate):
     def __init__(self, eta: float, gamma: float):
@@ -26,36 +29,35 @@ class ExpDecayRate(LearningRate):
         self.iter += 1
         return self.eta
 
-class DescentAlgorithm(FixedRate):
+
+class DescentAlgorithm:
     @abstractmethod
     def update(self, model, X, y):
         raise NotImplementedError
+
 
 class GradientDescent(DescentAlgorithm):
     def update(self, model, X, y):
         return model.w - model.lr.get_rate() * model.grad(X, y)
 
+
 class StochasticVarianceReducedGradientDescent(DescentAlgorithm):
-    def __init__(self, k: int):
-        self.w_est = np.ones((k,1))
-    
     def update(self, model, X, y):
-        w_est_curr = self.w_est
+        w_est_curr = model.w
         mean_est = np.zeros(w_est_curr.shape)
         n = X.shape[0]
         
         model.w = self.w_est
-        for i in range(0,n):
-            sample = X[i,:].reshape(X.shape[1],1).T
+        for i in range(n):
+            sample = X[i, :].reshape(X.shape[1],1).T
             mean_est += model.grad(sample, y[i])
         mean_est /= n
         
         w_0 = w_est_curr
         model.w = w_0
-        for t in range(0,100):
-#             print(w_0)
-            i_t = randint(0,n-1)
-            sample = X[i_t,:].reshape(X.shape[1],1).T
+        for t in range(2*n):
+            i_t = randint(0, n-1)
+            sample = X[i_t, :].reshape(X.shape[1],1).T
             model.w = w_0
             local_grad = model.grad(sample, y[i_t])
             model.w = w_est_curr
@@ -66,10 +68,11 @@ class StochasticVarianceReducedGradientDescent(DescentAlgorithm):
         
         return self.w_est
 
+
 class NesterovAcceleratedDescent(DescentAlgorithm):
-    def __init__(self, eta: LearningRate, y0: np.ndarray):
+    def __init__(self, eta: LearningRate):
         self.eta = eta
-        self.yt = y0
+        self.yt = 0
         self.lam = 0
 
     def update(self, model, X, y):

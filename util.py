@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def check_accuracy(model,X,y):
+
+def check_accuracy(model, X, y):
     num_samples, num_features = X.shape
     accurate = 0
 
@@ -13,4 +14,4 @@ def check_accuracy(model,X,y):
 
         if label == y[i]:
             accurate += 1
-    return (accurate / float(num_samples))
+    return accurate / float(num_samples)
