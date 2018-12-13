@@ -13,7 +13,7 @@ class LearningRate:
 class FixedRate(LearningRate):
     def __init__(self, eta: float):
         self.eta = eta
-    
+
     def get_rate(self):
         return self.eta
 
@@ -43,35 +43,31 @@ class GradientDescent(DescentAlgorithm):
 
 class StochasticVarianceReducedGradientDescent(DescentAlgorithm):
     def update(self, model, X, y):
-        w_est_curr = model.w
-        mean_est = np.zeros(w_est_curr.shape)
+        w_est = model.w
+        mean_est = np.zeros(w_est.shape)
         n = X.shape[0]
-        
-        model.w = self.w_est
+
         for i in range(n):
-            sample = X[i, :].reshape(X.shape[1],1).T
+            sample = X[i, :].reshape(1,X.shape[1])
             mean_est += model.grad(sample, y[i])
         mean_est /= n
-        
-        w_0 = w_est_curr
-        model.w = w_0
+
+        w_t = w_est
         for t in range(2*n):
             i_t = randint(0, n-1)
-            sample = X[i_t, :].reshape(X.shape[1],1).T
-            model.w = w_0
+            sample = X[i_t, :].reshape(1,X.shape[1])
+            model.w = w_t
             local_grad = model.grad(sample, y[i_t])
-            model.w = w_est_curr
+            model.w = w_est
             global_grad = model.grad(sample, y[i_t])
-            w_0 = w_0 - model.lr.get_rate() * (local_grad - global_grad + mean_est)
-        self.w_est = w_0
-        model.w = w_0
-        
-        return self.w_est
+            w_t = w_t - model.lr.get_rate() * (local_grad - global_grad + mean_est)
+        model.w = w_t
+
+        return w_t
 
 
 class NesterovAcceleratedDescent(DescentAlgorithm):
-    def __init__(self, eta: LearningRate):
-        self.eta = eta
+    def __init__(self):
         self.yt = 0
         self.lam = 0
 
