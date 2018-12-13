@@ -1,6 +1,7 @@
 import numpy as np
 from abc import ABCMeta, abstractmethod
 from math import sqrt
+from random import randint
 
 class LearningRate:
     @abstractmethod
@@ -35,12 +36,33 @@ class GradientDescent(DescentAlgorithm):
         return model.w - model.lr.get_rate() * model.grad(X, y)
 
 class StochasticVarianceReducedGradientDescent(DescentAlgorithm):
-    def __init__(self, eta: LearningRate, w_est: np.ndarray):
+    def __init__(self, eta: LearningRate, k: int):
         self.eta = eta
-        self.w_est = w_est
+        self.w_est = np.rand(k)
     
     def update(self, model, X, y):
-        raise NotImplementedError
+        w_est_curr = self.w_est
+        mean_est = zero(w_est_curr.shape)
+        n = X.shape[0]
+        
+        model.w = self.w_est
+        for i in range(0,n):
+            sample = X[i,:]
+            mean_est += model.grad(sample, y[i])
+        mean_est /= n
+        
+        w_0 = w_est_curr
+        for t in range(0,2*n):
+            i_t = randint(0,n+1)
+            sample = X[i_t,:]
+            model.w = w_0
+            local_grad = model.grad(sample, y[i_t])
+            model.w = w_est_curr
+            global_grad = model.grad(sample, y[i_t])
+            w_0 = w_0 - self.eta * (local_grad - global_grad + mean_est)
+        self.w_est = w_0
+        
+        return self.w_est
 
 class NesterovAcceleratedDescent(DescentAlgorithm):
     def __init__(self, eta: LearningRate, y0: np.ndarray):
