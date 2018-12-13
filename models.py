@@ -5,8 +5,7 @@ from abc import ABCMeta, abstractmethod
 
 class Model:
     @abstractmethod
-    def __init__(self, descent: DescentAlgorithm, lr: LearningRate,
-        num_iter: int, batch_size: int, rel_conv: float):
+    def __init__(self, descent: DescentAlgorithm, lr: LearningRate, num_iter: int, batch_size: int, rel_conv: float):
         self.lr = lr
         self.w = np.empty([1])
         self.descent = descent
@@ -30,40 +29,19 @@ class Model:
     def grad(self, X: np.ndarray, y: np.ndarray):
         raise NotImplementedError
 
-# class LinearRegression(Model):
-#     def __init__(self, descent: DescentAlgorithm, lr: LearningRate, num_iter: int, batch_size: int):
-#         super().__init__(descent, lr, num_iter, batch_size)
-
-#     @staticmethod
-#     def __sigmoid(z):
-#         return 1 / (1 + np.exp(-z))
-
-#     def loss(self, h, y):
-#         return np.sum((h - y)**2) / y.shape[0]
-
-#     def grad(self, X, y):
-#         h = self.predict(X)
-#         return np.dot(X.T, (h - y)) / y.shape[0]
-
-#     def fit(self, X: np.ndarray, y: np.ndarray):
-#         self.w = np.random.rand(X.shape[1], 1)
-#         print(self.w.shape)
-#         loss_data = train(X, y, self, int(self.num_iter / 10))
-#         return loss_data
-
-#     def predict(self, X: np.ndarray):
-#         return self.__sigmoid(np.dot(X, self.w))
 
 class LogisticRegression(Model):
-    def __init__(self, descent: DescentAlgorithm, lr: LearningRate,
-        num_iter: int, batch_size: int, rel_conv: float):
+    def __init__(self, descent: DescentAlgorithm, lr: LearningRate, num_iter: int, batch_size: int, rel_conv: float):
         super().__init__(descent, lr, num_iter, batch_size, rel_conv)
+        self.X = None
+        self.y = None
 
     @staticmethod
     def __sigmoid(z):
         return 1 / (1 + np.exp(-z))
 
-    def loss(self, h, y):
+    def loss(self, X, y):
+        h = self.predict(X)
         return np.dot(-y.T, np.log(h)) - np.dot((1 - y).T,np.log(1 - h))
 
     def grad(self, X, y):
@@ -80,9 +58,42 @@ class LogisticRegression(Model):
     def predict(self, X: np.ndarray):
         return self.__sigmoid(np.dot(X, self.w))
 
-def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int,
-    rel_conv: float, non_zero_init: bool = False) -> np.ndarray:
-    if(non_zero_init):
+
+class SVM(Model):
+    def __init__(self, descent: DescentAlgorithm, lr: LearningRate, c: float, num_iter: int, batch_size: int,
+                 rel_conv: float):
+        super().__init__(descent, lr, num_iter, batch_size, rel_conv)
+        # self.kernel = kernel.get_kernel()
+        self.c = c
+        self.w = np.empty([0])
+
+    def loss(self, X, y):
+        n = X.shape[0]
+        return np.dot(self.w, self.w) + \
+               self.c * (1/n) * np.sum(np.maximum(np.zeros(self.w.shape), (1 - np.dot(y, X*self.w))))
+
+    def grad(self, X: np.ndarray, y: np.ndarray):
+        n = X.shape[0]
+        grad = np.zeros(self.w.shape)
+        for i in range(n):
+            if y[i] * np.dot(X[i], self.w) > 1:
+                grad += (1/n)*self.w - self.c*y[i]*X[i]
+            else:
+                grad += (1/n)*self.w
+        return grad
+
+    def fit(self, X: np.ndarray, y: np.ndarray, non_zero_init: bool = False):
+        self.w = np.random.rand(X.shape[1], 1)
+        loss_data = train(X, y, self, int(self.num_iter / 10), self.rel_conv, non_zero_init)
+        return loss_data
+
+    def predict(self, X: np.ndarray):
+        return np.sign(X.dot(self.w))
+
+
+def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int, rel_conv: float, non_zero_init: bool = False) \
+        -> np.ndarray:
+    if non_zero_init:
         model.w = np.ones((X.shape[1], 1))
         model.w /= X.shape[1]
     else:
@@ -97,10 +108,9 @@ def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int,
         batch_idx = idx[int(start_idx):int(stop_idx)]
         bX = X[perm_idx[batch_idx], :]
         bY = y[perm_idx[batch_idx], :]
-        bh = model.predict(bX)
         model.w = model.descent.update(model, bX, bY)
         start_idx = stop_idx % n
-        loss_data[i] = model.loss(model.predict(X), y)
+        loss_data[i] = model.loss(X, y)
         if i % print_iter == 0:
             print('Iter: {:8} train loss: {:.3f}'.format(i, float(loss_data[i])))
         if (i > 0) and ((abs(loss_data[i] - loss_data[i-1]) / loss_data[i]) < rel_conv):
@@ -108,5 +118,6 @@ def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int,
             loss_data = loss_data[0:i]
             break
     return loss_data
+
 
 

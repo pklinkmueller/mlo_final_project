@@ -64,6 +64,7 @@ def load_banknote_auth_set() -> Tuple[np.ndarray, np.ndarray]:
 
     return bn_features, bn_labels
 
+
 ####################################################################################################
 # cod-rna
 # 59,535 samples
@@ -78,7 +79,8 @@ def load_cod_rna() -> Tuple[np.ndarray, np.ndarray]:
     cod_labels = np.reshape(cod_labels, (-1,1))
     
     return cod_features, cod_labels
-                                              
+
+
 ####################################################################################################
 # MNIST 1 and 3
 # sample num: 12873
@@ -109,7 +111,6 @@ def load_MNIST_13() -> Tuple[np.ndarray, np.ndarray]:
         
     return trimmed_features.astype(np.float32), trimmed_labels.astype(np.float32)
 
-    
 
 ####################################################################################################
 # covtype.binary
