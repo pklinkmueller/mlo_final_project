@@ -67,17 +67,21 @@ class LogisticRegression(Model):
         h = self.predict(X)
         return np.dot(X.T, (h - y)) / y.shape[0]
 
-    def fit(self, X: np.ndarray, y: np.ndarray):
+    def fit(self, X: np.ndarray, y: np.ndarray, non_zero_init: bool = False):
         self.w = np.random.rand(X.shape[1], 1)
-        loss_data = train(X, y, self, int(self.num_iter / 10))
+        loss_data = train(X, y, self, int(self.num_iter / 10), non_zero_init)
         return loss_data
 
     def predict(self, X: np.ndarray):
         return self.__sigmoid(np.dot(X, self.w))
 
 
-def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int) -> np.ndarray:
-    model.w = np.zeros((X.shape[1], 1))
+def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int, non_zero_init: bool = False) -> np.ndarray:
+    if(non_zero_init):
+        model.w = np.ones((X.shape[1], 1))
+        model.w /= X.shape[1]
+    else:
+        model.w = np.zeros((X.shape[1], 1))
     n = X.shape[0]
     start_idx = 0
     perm_idx = np.random.permutation(n)
