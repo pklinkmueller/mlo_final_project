@@ -61,6 +61,17 @@ def load_banknote_auth_set() -> Tuple[np.ndarray, np.ndarray]:
 
     return bn_features, bn_labels
 
+####################################################################################################
+# cod-rna
+# 59,535 samples
+def load_cod_rna() -> Tuple[np.ndarray, np.ndarray]:
+    cod_features, cod_labels = load_svmlight_file(os.path.join(dir_path,'./cod_rna/cod-rna'))
+    cod_labels = cod_labels + 1
+    cod_labels /= 2
+    
+    return np.array(cod_features), np.array(cod_labels)
+                                              
+
 
 ####################################################################################################
 # covtype.binary
