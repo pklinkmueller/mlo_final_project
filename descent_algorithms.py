@@ -45,24 +45,24 @@ class StochasticVarianceReducedGradientDescent(DescentAlgorithm):
     def update(self, model, X, y):
         w_est = model.w
         mean_est = np.zeros(w_est.shape)
-        n = X.shape[0]
+        n = model.X.shape[0]
+        k = model.X.shape[1]
 
         for i in range(n):
-            sample = X[i, :].reshape(1,X.shape[1])
-            mean_est += model.grad(sample, y[i])
+            sample = model.X[i, :].reshape(1,k)
+            mean_est += model.grad(sample, model.y[i])
         mean_est /= n
 
         w_t = w_est
         for t in range(2*n):
             i_t = randint(0, n-1)
-            sample = X[i_t, :].reshape(1,X.shape[1])
+            sample = model.X[i_t, :].reshape(1,k)
             model.w = w_t
-            local_grad = model.grad(sample, y[i_t])
+            local_grad = model.grad(sample, model.y[i_t])
             model.w = w_est
-            global_grad = model.grad(sample, y[i_t])
+            global_grad = model.grad(sample, model.y[i_t])
             w_t = w_t - model.lr.get_rate() * (local_grad - global_grad + mean_est)
         model.w = w_t
-
         return w_t
 
 
