@@ -82,5 +82,13 @@ class NesterovAcceleratedDescent(DescentAlgorithm):
         # Update internal sequence
         self.lam = lam_next
         return w_new
+class MirrorDescent(DescentAlgorithm):
+    #using bregman divergence 
+    def update(self, model, X, y):
+        #sum_w = np.dot((model.w).T, np.exp(-model.lr.get_rate() * model.grad(X, y)))
+        sum_w = 1
+        w_new = (model.w*np.exp(-model.lr.get_rate() * model.grad(X, y)))/sum_w
+        return w_new
+
 
 
