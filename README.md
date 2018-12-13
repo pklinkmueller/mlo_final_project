@@ -18,4 +18,4 @@ Comparing convergence rate, runtime, and accuracy for
   - Stochastic Gradient Descent [DONE]
   - Stochastic Variance Reduced Gradient (SVRG) [DONE]
 
-with logistic regression [DONE] and SVD [UNIMPLEMENTED] and L-2/L-1 regularization [UNIMPLEMENTED].
+with logistic regression [DONE] and SVM [UNIMPLEMENTED] and L-2/L-1 regularization [UNIMPLEMENTED].
