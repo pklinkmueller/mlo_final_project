@@ -12,12 +12,10 @@ Jason Zhang
 
 ## Initial Outline
 Comparing convergence rate, runtime, and accuracy for
-  - Gradient Descent [UNIMPLEMENTED]
+  - Gradient Descent [DONE]
   - Nesterov's Accelerated Gradient Descent [UNIMPLEMENTED]
   - Mirror Descent [UNIMPLEMENTED]
-  - Stochastic Gradient Descent [UNIMPLEMENTED]
-  - Stochastic Variance Reduced Gradient (SVRG) [UNIMPLEMENTED]
-  - Katyusha's Algorithm [MAYBE/MAYBE NOT]
-  - Coordinate Descent for logistic regression [UNIMPLEMENTED]
+  - Stochastic Gradient Descent [DONE]
+  - Stochastic Variance Reduced Gradient (SVRG) [DONE]
 
-with smooth loss functions (recommended: squared loss - as well as one to two others) and L-1 regularization.
+with logistic regression [DONE] and SVD [UNIMPLEMENTED] and L-1 regularization [UNIMPLEMENTED].
