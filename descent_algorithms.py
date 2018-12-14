@@ -54,12 +54,19 @@ class NesterovAcceleratedDescent(DescentAlgorithm):
         return w_new
 
 class MirrorDescent(DescentAlgorithm):
-    #using bregman divergence
+    #Exponentiated Gradient Descent
+    def __init__(self):
+        self.wpos = None
+        self.wneg = None
+        self.initialized = False
     def update(self, model, X, y):
-        #sum_w = np.dot((model.w).T, np.exp(-model.lr.get_rate() * model.grad(X, y)))
-        sum_w = 1
-        w_new = (model.w*np.exp(-model.lr.get_rate() * model.grad(X, y)))/sum_w
-        return w_new
+        if(not self.initialized):
+            self.wpos = np.ones((X.shape[1], 1))
+            self.wneg = -1*self.wpos
+            self.initialized = True
+        self.wpos = (self.wpos*np.exp(-model.lr.get_rate() * model.grad(X, y)))
+        self.wneg = (self.wneg*np.exp(model.lr.get_rate() * model.grad(X, y)))
+        return self.wpos + self.wneg
 
 
 
