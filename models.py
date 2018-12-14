@@ -144,7 +144,7 @@ class SVM(Model):
     def fit(self, X: np.ndarray, y: np.ndarray):
         self.X = X
         self.y = y
-        self.w = np.random.rand(X.shape[1], 1)
+        self.w = np.random.rand(X.shape[1], 1)*100.
         loss_data = train(X, y, self, int(self.num_iter / 10), self.rel_conv)
         return loss_data
 
@@ -157,7 +157,7 @@ class SVM(Model):
 
 def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int, rel_conv: float) \
         -> np.ndarray:
-    model.w = np.zeros((X.shape[1], 1))
+    # model.w = np.zeros((X.shape[1], 1))
     n = X.shape[0]
     start_idx = 0
     perm_idx = np.random.permutation(n)
