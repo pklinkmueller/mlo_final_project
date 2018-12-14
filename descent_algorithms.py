@@ -3,6 +3,18 @@ from abc import ABCMeta, abstractmethod
 from math import sqrt
 from random import randint
 
+
+"""
+Descent Algorithms
+
+Functions:
+    update():
+    
+    Parameters: 
+    model (Model): passed in model
+    X (np.ndarray): input data
+    y (np.ndarray): input ground truths
+"""
 class DescentAlgorithm:
     @abstractmethod
     def update(self, model, X, y):
