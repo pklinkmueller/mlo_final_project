@@ -54,7 +54,7 @@ class NesterovAcceleratedDescent(DescentAlgorithm):
         return w_new
 
 class MirrorDescent(DescentAlgorithm):
-    #using bregman divergence 
+    #Exponentiated Gradient Descent
     def __init__(self):
         self.wpos = None
         self.wneg = None
