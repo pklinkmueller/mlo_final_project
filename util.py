@@ -74,3 +74,15 @@ def plot_dynamic_losses(gd, sgd_1, md):
     plt.plot(md, 'm')
     plt.legend(['GD','SGD_1','MD'], fontsize='x-large')
     plt.show()
+
+def plot_dynamic_svm_losses(gd, sgd_100, md):
+    plt.figure(figsize=(14,10))
+    plt.xlabel('Iteration Number',fontsize='xx-large')
+    plt.xlim(0,400)
+    plt.ylabel('Loss',fontsize='xx-large')
+    plt.plot(gd, '+' 'b')
+    plt.plot(sgd_100, 'g')
+    plt.plot(md, 'm')
+    plt.legend(['GD','SGD_100','MD'], fontsize='x-large')
+    plt.show()
+
