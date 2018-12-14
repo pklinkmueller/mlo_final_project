@@ -59,6 +59,7 @@ class MirrorDescent(DescentAlgorithm):
         self.wpos = None
         self.wneg = None
         self.initialized = False
+
     def update(self, model, X, y):
         if(not self.initialized):
             self.wpos = np.ones((X.shape[1], 1))

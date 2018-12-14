@@ -1,5 +1,6 @@
 import numpy as np
-from descent_algorithms import DescentAlgorithm, LearningRate
+from descent_algorithms import DescentAlgorithm
+from learning_rates import LearningRate
 from abc import ABCMeta, abstractmethod
 
 
@@ -30,30 +31,6 @@ class Model:
     def grad(self, X: np.ndarray, y: np.ndarray):
         raise NotImplementedError
 
-# class LinearRegression(Model):
-#     def __init__(self, descent: DescentAlgorithm, lr: LearningRate, num_iter: int, batch_size: int):
-#         super().__init__(descent, lr, num_iter, batch_size)
-
-#     @staticmethod
-#     def __sigmoid(z):
-#         return 1 / (1 + np.exp(-z))
-
-#     def loss(self, h, y):
-#         return np.sum((h - y)**2) / y.shape[0]
-
-#     def grad(self, X, y):
-#         h = self.predict(X)
-#         return np.dot(X.T, (h - y)) / y.shape[0]
-
-#     def fit(self, X: np.ndarray, y: np.ndarray):
-#         self.w = np.random.rand(X.shape[1], 1)
-#         print(self.w.shape)
-#         loss_data = train(X, y, self, int(self.num_iter / 10))
-#         return loss_data
-
-#     def predict(self, X: np.ndarray):
-#         return self.__sigmoid(np.dot(X, self.w))
-
 class LogisticRegression(Model):
     def __init__(self, descent: DescentAlgorithm, lr: LearningRate,
         num_iter: int, batch_size: int, rel_conv: float):
@@ -71,15 +48,17 @@ class LogisticRegression(Model):
         return np.dot(X.T, (h - y)) / y.shape[0]
 
     def fit(self, X: np.ndarray, y: np.ndarray):
+        self.X = X
+        self.y = y
         self.w = np.random.rand(X.shape[1], 1)
-        loss_data = train(X, y, self, int(self.num_iter / 10))
+        loss_data = train(X, y, self, int(self.num_iter / 10), self.rel_conv)
         return loss_data
 
     def predict(self, X: np.ndarray):
         return self.__sigmoid(np.dot(X, self.w))
 
-
-def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int) -> np.ndarray:
+def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int,
+    rel_conv: float) -> np.ndarray:
     model.w = np.zeros((X.shape[1], 1))
     n = X.shape[0]
     start_idx = 0
@@ -98,7 +77,7 @@ def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int) -> np.nda
         if i % print_iter == 0:
             print('Iter: {:8} train loss: {:.3f}'.format(i, float(loss_data[i])))
         if (i > 0) and ((abs(loss_data[i] - loss_data[i-1]) / loss_data[i]) < rel_conv):
-            print('Converged at {} iterations.'.format(i))
+            print('Converged in {} iterations.'.format(i))
             loss_data = loss_data[0:i]
             break
     return loss_data
