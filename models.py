@@ -9,14 +9,15 @@ Abstract Class for Classification Models
 """
 class Model:
     @abstractmethod
-    def __init__(self, descent: DescentAlgorithm, lr: LearningRate,
-        num_iter: int, batch_size: int, rel_conv: float):
+    def __init__(self, descent: DescentAlgorithm, lr: LearningRate, num_iter: int, batch_size: int, rel_conv: float):
         self.lr = lr
         self.w = np.empty([1])
         self.descent = descent
         self.num_iter = num_iter
         self.batch_size = batch_size
         self.rel_conv = rel_conv
+        self.X = np.ndarray
+        self.y = np.ndarray
 
     @abstractmethod
     def fit(self, X: np.ndarray, y: np.ndarray):
@@ -40,8 +41,7 @@ Logistic Regression Model
 """
 
 class LogisticRegression(Model):
-    def __init__(self, descent: DescentAlgorithm, lr: LearningRate,
-        num_iter: int, batch_size: int, rel_conv: float):
+    def __init__(self, descent: DescentAlgorithm, lr: LearningRate, num_iter: int, batch_size: int, rel_conv: float):
         super().__init__(descent, lr, num_iter, batch_size, rel_conv)
 
     """
@@ -106,19 +106,50 @@ class LogisticRegression(Model):
     """
     def predict(self, X: np.ndarray):
         return self.__sigmoid(np.dot(X, self.w))
-"""
-Train model and output weights
 
-Parameters:
-    X (np.ndarray) : numpy array input data
-    y (np.ndarray) : numpy array ground truths
-    print_iter (int) : Iterations
-    rel_conv (float) : Relative Convergence 
-Returns:
-    np.ndarray: loss/iteration
-"""
-def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int,
-    rel_conv: float) -> np.ndarray:
+    # Return whether the prediction was labeled 0 or 1.
+    def predict_label(self, X: np.ndarray):
+        return np.round(self.predict(X))
+
+
+class SVM(Model):
+    def __init__(self, descent: DescentAlgorithm, lr: LearningRate, c: float, num_iter: int, batch_size: int,
+                 rel_conv: float):
+        super().__init__(descent, lr, num_iter, batch_size, rel_conv)
+        # self.kernel = kernel.get_kernel()
+        self.c = c
+        self.w = np.empty([0])
+
+    def loss(self, X, y):
+        n = X.shape[0]
+        loss = 1 - np.multiply(y, np.dot(X, self.w))
+        loss[loss < 0] = 0
+        return self.c * np.dot(self.w.T, self.w) + (1/n) * np.sum(loss)
+
+    def grad(self, X: np.ndarray, y: np.ndarray):
+        n = X.shape[0]
+        grad = self.c * self.w
+        for i in range(n):
+            if y[i] * np.dot(X[i], self.w) <= 0:
+                grad += -y[i]*X[i].reshape(X[i].shape[0], 1)
+        return grad
+
+    def fit(self, X: np.ndarray, y: np.ndarray, non_zero_init: bool = False):
+        self.X = X
+        self.y = y
+        self.w = np.random.rand(X.shape[1], 1)
+        loss_data = train(X, y, self, int(self.num_iter / 10), self.rel_conv, non_zero_init)
+        return loss_data
+
+    def predict(self, X: np.ndarray):
+        h = X.dot(self.w)
+        h[h >= 0] = 1
+        h[h < 0] = -1
+        return h
+
+
+def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int, rel_conv: float) \
+        -> np.ndarray:
     model.w = np.zeros((X.shape[1], 1))
     n = X.shape[0]
     start_idx = 0
@@ -130,10 +161,9 @@ def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int,
         batch_idx = idx[int(start_idx):int(stop_idx)]
         bX = X[perm_idx[batch_idx], :]
         bY = y[perm_idx[batch_idx], :]
-        bh = model.predict(bX)
         model.w = model.descent.update(model, bX, bY)
         start_idx = stop_idx % n
-        loss_data[i] = model.loss(model.predict(X), y)
+        loss_data[i] = model.loss(X, y)
         if i % print_iter == 0:
             print('Iter: {:8} train loss: {:.3f}'.format(i, float(loss_data[i])))
         if (i > 0) and ((abs(loss_data[i] - loss_data[i-1]) / loss_data[i]) < rel_conv):
@@ -141,5 +171,6 @@ def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int,
             loss_data = loss_data[0:i]
             break
     return loss_data
+
 
 
