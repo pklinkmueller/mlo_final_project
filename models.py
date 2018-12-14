@@ -12,6 +12,8 @@ class Model:
         self.num_iter = num_iter
         self.batch_size = batch_size
         self.rel_conv = rel_conv
+        self.X = np.ndarray
+        self.y = np.ndarray
 
     @abstractmethod
     def fit(self, X: np.ndarray, y: np.ndarray):
@@ -33,8 +35,6 @@ class Model:
 class LogisticRegression(Model):
     def __init__(self, descent: DescentAlgorithm, lr: LearningRate, num_iter: int, batch_size: int, rel_conv: float):
         super().__init__(descent, lr, num_iter, batch_size, rel_conv)
-        self.X = None
-        self.y = None
 
     @staticmethod
     def __sigmoid(z):
@@ -58,9 +58,14 @@ class LogisticRegression(Model):
     def predict(self, X: np.ndarray):
         return self.__sigmoid(np.dot(X, self.w))
 
+    # Return whether the prediction was labeled 0 or 1.
+    def predict_label(self, X: np.ndarray):
+        return np.round(self.predict(X))
+
 
 class SVM(Model):
-    def __init__(self, descent: DescentAlgorithm, lr: LearningRate, c: float, num_iter: int, batch_size: int, rel_conv: float):
+    def __init__(self, descent: DescentAlgorithm, lr: LearningRate, c: float, num_iter: int, batch_size: int,
+                 rel_conv: float):
         super().__init__(descent, lr, num_iter, batch_size, rel_conv)
         # self.kernel = kernel.get_kernel()
         self.c = c
@@ -68,18 +73,16 @@ class SVM(Model):
 
     def loss(self, X, y):
         n = X.shape[0]
-        l = 1 - np.multiply(y, np.dot(X, self.w))
-        l[l < 0] = 0
-        return np.dot(self.w.T, self.w) + self.c * (1/n) * np.sum(l)
+        loss = 1 - np.multiply(y, np.dot(X, self.w))
+        loss[loss < 0] = 0
+        return np.dot(self.w.T, self.w) + self.c * (1/n) * np.sum(loss)
 
     def grad(self, X: np.ndarray, y: np.ndarray):
         n = X.shape[0]
-        grad = np.zeros(self.w.shape)
+        grad = self.w
         for i in range(n):
-            if y[i] * np.dot(X[i], self.w) > 1:
-                grad += (1/n)*self.w - self.c*y[i]*X[i].reshape(X[i].shape[0],1)
-            else:
-                grad += (1/n)*self.w
+            if y[i] * np.dot(X[i], self.w) < 1:
+                grad += self.c*y[i]*X[i].reshape(X[i].shape[0], 1)
         return grad
 
     def fit(self, X: np.ndarray, y: np.ndarray, non_zero_init: bool = False):
