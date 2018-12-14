@@ -9,8 +9,8 @@ Descent Algorithms
 
 Functions:
     update():
-    
-    Parameters: 
+
+    Parameters:
     model (Model): passed in model
     X (np.ndarray): input data
     y (np.ndarray): input ground truths
@@ -25,11 +25,17 @@ class GradientDescent(DescentAlgorithm):
         return model.w - model.lr.get_rate() * model.grad(X, y)
 
 class StochasticVarianceReducedGradientDescent(DescentAlgorithm):
+    def __init__(self):
+        self.converged = 0
+
     def update(self, model, X, y):
         w_est = model.w
         mean_est = np.zeros(w_est.shape)
         n = model.X.shape[0]
         k = model.X.shape[1]
+
+        if (self.converged == 1):
+            return model.w
 
         for i in range(n):
             sample = model.X[i, :].reshape(1,k)
@@ -37,6 +43,7 @@ class StochasticVarianceReducedGradientDescent(DescentAlgorithm):
         mean_est /= n
 
         w_t = w_est
+        w_t1 = w_t
         for t in range(2*n):
             i_t = randint(0, n-1)
             sample = model.X[i_t, :].reshape(1,k)
@@ -44,7 +51,11 @@ class StochasticVarianceReducedGradientDescent(DescentAlgorithm):
             local_grad = model.grad(sample, model.y[i_t])
             model.w = w_est
             global_grad = model.grad(sample, model.y[i_t])
+            w_t1 = w_t
             w_t = w_t - model.lr.get_rate() * (local_grad - global_grad + mean_est)
+            if ((np.linalg.norm(w_t1 - w_t))/np.linalg.norm(w_t) < 0.000001):
+                self.converged = 1
+                break
         model.w = w_t
 
         return w_t

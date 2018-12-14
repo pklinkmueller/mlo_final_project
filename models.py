@@ -94,15 +94,16 @@ class LogisticRegression(Model):
     Returns:
         np_array: loss/iteration
     """
-    def fit(self, X: np.ndarray, y: np.ndarray):
+    def fit(self, X: np.ndarray, y: np.ndarray, verbose: bool = False):
         self.X = X
         self.y = y
-        self.w = np.random.rand(X.shape[1], 1)
+        # self.w = np.random.rand(X.shape[1], 1)
+        self.w = np.zeros((X.shape[1], 1))
         start_time = time.time()
-        loss_data = train(X, y, self, int(self.num_iter / 10), self.rel_conv)
+        loss_data = train(X, y, self, int(self.num_iter / 10), self.rel_conv, verbose)
         self.time = time.time()-start_time
-        print('Runtime:{a:.5f} secs.'.format(a=self.time))
-        return loss_data
+        # print('Runtime:{a:.5f} secs.'.format(a=self.time))
+        return loss_data, self.time
     """
     Output prediction
 
@@ -141,15 +142,15 @@ class SVM(Model):
                 grad += -y[i]*X[i].reshape(X[i].shape[0], 1)
         return grad
 
-    def fit(self, X: np.ndarray, y: np.ndarray):
+    def fit(self, X: np.ndarray, y: np.ndarray, verbose: bool = False):
         self.X = X
         self.y = y
         self.w = np.random.rand(X.shape[1], 1)*100.
         start_time = time.time()
-        loss_data = train(X, y, self, int(self.num_iter / 10), self.rel_conv)
+        loss_data = train(X, y, self, int(self.num_iter / 10), self.rel_conv, verbose)
         self.time = time.time()-start_time
-        print('Runtime:{a:.5f} secs.'.format(a=self.time))
-        return loss_data
+        # print('Runtime:{a:.5f} secs.'.format(a=self.time))
+        return loss_data, self.time
 
     def predict(self, X: np.ndarray):
         h = X.dot(self.w)
@@ -158,9 +159,9 @@ class SVM(Model):
         return h
 
 
-def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int, rel_conv: float) \
+def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int,
+    rel_conv: float, verbose: bool = False) \
         -> np.ndarray:
-    # model.w = np.zeros((X.shape[1], 1))
     n = X.shape[0]
     start_idx = 0
     perm_idx = np.random.permutation(n)
@@ -174,11 +175,10 @@ def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int, rel_conv:
         model.w = model.descent.update(model, bX, bY)
         start_idx = stop_idx % n
         loss_data[i] = model.loss(X, y)
-        if i % print_iter == 0:
+        if (i % print_iter == 0) and verbose:
             print('Iter: {:8} train loss: {:.3f}'.format(i, float(loss_data[i])))
         if (i > 0) and ((abs(loss_data[i] - loss_data[i-1]) / loss_data[i]) < rel_conv):
             print('Converged in {} iterations.'.format(i))
-            loss_data = loss_data[0:i]
             break
     return loss_data
 
