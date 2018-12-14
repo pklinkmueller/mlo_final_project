@@ -60,8 +60,7 @@ class LogisticRegression(Model):
 
 
 class SVM(Model):
-    def __init__(self, descent: DescentAlgorithm, lr: LearningRate, c: float, num_iter: int, batch_size: int,
-                 rel_conv: float):
+    def __init__(self, descent: DescentAlgorithm, lr: LearningRate, c: float, num_iter: int, batch_size: int, rel_conv: float):
         super().__init__(descent, lr, num_iter, batch_size, rel_conv)
         # self.kernel = kernel.get_kernel()
         self.c = c
@@ -69,20 +68,23 @@ class SVM(Model):
 
     def loss(self, X, y):
         n = X.shape[0]
-        return np.dot(self.w, self.w) + \
-               self.c * (1/n) * np.sum(np.maximum(np.zeros(self.w.shape), (1 - np.dot(y, X*self.w))))
+        l = 1 - np.multiply(y, np.dot(X, self.w))
+        l[l < 0] = 0
+        return np.dot(self.w.T, self.w) + self.c * (1/n) * np.sum(l)
 
     def grad(self, X: np.ndarray, y: np.ndarray):
         n = X.shape[0]
         grad = np.zeros(self.w.shape)
         for i in range(n):
             if y[i] * np.dot(X[i], self.w) > 1:
-                grad += (1/n)*self.w - self.c*y[i]*X[i]
+                grad += (1/n)*self.w - self.c*y[i]*X[i].reshape(X[i].shape[0],1)
             else:
                 grad += (1/n)*self.w
         return grad
 
     def fit(self, X: np.ndarray, y: np.ndarray, non_zero_init: bool = False):
+        self.X = X
+        self.y = y
         self.w = np.random.rand(X.shape[1], 1)
         loss_data = train(X, y, self, int(self.num_iter / 10), self.rel_conv, non_zero_init)
         return loss_data
