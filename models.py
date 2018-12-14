@@ -5,15 +5,17 @@ from abc import ABCMeta, abstractmethod
 
 class Model:
     @abstractmethod
-    def __init__(self, descent: DescentAlgorithm, lr: LearningRate, num_iter: int, batch_size: int):
+    def __init__(self, descent: DescentAlgorithm, lr: LearningRate,
+        num_iter: int, batch_size: int, rel_conv: float):
         self.lr = lr
         self.w = np.empty([1])
         self.descent = descent
         self.num_iter = num_iter
         self.batch_size = batch_size
+        self.rel_conv = rel_conv
 
     @abstractmethod
-    def fit(self, X: np.ndarray, y: np.ndarray, ):
+    def fit(self, X: np.ndarray, y: np.ndarray):
         raise NotImplementedError
 
     @abstractmethod
@@ -53,8 +55,9 @@ class Model:
 #         return self.__sigmoid(np.dot(X, self.w))
 
 class LogisticRegression(Model):
-    def __init__(self, descent: DescentAlgorithm, lr: LearningRate, num_iter: int, batch_size: int):
-        super().__init__(descent, lr, num_iter, batch_size)
+    def __init__(self, descent: DescentAlgorithm, lr: LearningRate,
+        num_iter: int, batch_size: int, rel_conv: float):
+        super().__init__(descent, lr, num_iter, batch_size, rel_conv)
 
     @staticmethod
     def __sigmoid(z):
@@ -89,12 +92,15 @@ def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int) -> np.nda
         bX = X[perm_idx[batch_idx], :]
         bY = y[perm_idx[batch_idx], :]
         bh = model.predict(bX)
-        model.w = model.descent.update(model, X, y)
+        model.w = model.descent.update(model, bX, bY)
         start_idx = stop_idx % n
         loss_data[i] = model.loss(model.predict(X), y)
         if i % print_iter == 0:
             print('Iter: {:8} train loss: {:.3f}'.format(i, float(loss_data[i])))
-
+        if (i > 0) and ((abs(loss_data[i] - loss_data[i-1]) / loss_data[i]) < rel_conv):
+            print('Converged at {} iterations.'.format(i))
+            loss_data = loss_data[0:i]
+            break
     return loss_data
 
 
