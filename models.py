@@ -46,13 +46,13 @@ class LogisticRegression(Model):
 
     """
     Calculates sigmoid of input
-    
+
     Parameters:
-    
+
     z (np.ndarray) : numpy array
-    
+
     Returns:
-        np.ndarray : returns sigmoid calculation 
+        np.ndarray : returns sigmoid calculation
     """
 
     @staticmethod
@@ -67,7 +67,8 @@ class LogisticRegression(Model):
     Returns:
         float: loss value
     """
-    def loss(self, h, y):
+    def loss(self, X, y):
+        h = self.predict(X)
         return np.dot(-y.T, np.log(h)) - np.dot((1 - y).T,np.log(1 - h))
     """
     Calculate Gradient
