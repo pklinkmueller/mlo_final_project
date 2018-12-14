@@ -134,11 +134,11 @@ class SVM(Model):
                 grad += -y[i]*X[i].reshape(X[i].shape[0], 1)
         return grad
 
-    def fit(self, X: np.ndarray, y: np.ndarray, non_zero_init: bool = False):
+    def fit(self, X: np.ndarray, y: np.ndarray):
         self.X = X
         self.y = y
         self.w = np.random.rand(X.shape[1], 1)
-        loss_data = train(X, y, self, int(self.num_iter / 10), self.rel_conv, non_zero_init)
+        loss_data = train(X, y, self, int(self.num_iter / 10), self.rel_conv)
         return loss_data
 
     def predict(self, X: np.ndarray):
