@@ -1,4 +1,6 @@
 import numpy as np
+import time
+import datetime
 from descent_algorithms import DescentAlgorithm
 from learning_rates import LearningRate
 from abc import ABCMeta, abstractmethod
@@ -18,6 +20,7 @@ class Model:
         self.rel_conv = rel_conv
         self.X = np.ndarray
         self.y = np.ndarray
+        self.time = datetime.time()
 
     @abstractmethod
     def fit(self, X: np.ndarray, y: np.ndarray):
@@ -95,7 +98,10 @@ class LogisticRegression(Model):
         self.X = X
         self.y = y
         self.w = np.random.rand(X.shape[1], 1)
+        start_time = time.time()
         loss_data = train(X, y, self, int(self.num_iter / 10), self.rel_conv)
+        self.time = time.time()-start_time
+        print('Runtime:{a:.5f} secs.'.format(a=self.time))
         return loss_data
     """
     Output prediction
