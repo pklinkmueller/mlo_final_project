@@ -75,14 +75,14 @@ class SVM(Model):
         n = X.shape[0]
         loss = 1 - np.multiply(y, np.dot(X, self.w))
         loss[loss < 0] = 0
-        return np.dot(self.w.T, self.w) + self.c * (1/n) * np.sum(loss)
+        return self.c * np.dot(self.w.T, self.w) + (1/n) * np.sum(loss)
 
     def grad(self, X: np.ndarray, y: np.ndarray):
         n = X.shape[0]
-        grad = self.w
+        grad = self.c * self.w
         for i in range(n):
-            if y[i] * np.dot(X[i], self.w) < 1:
-                grad += self.c*y[i]*X[i].reshape(X[i].shape[0], 1)
+            if y[i] * np.dot(X[i], self.w) <= 0:
+                grad += -y[i]*X[i].reshape(X[i].shape[0], 1)
         return grad
 
     def fit(self, X: np.ndarray, y: np.ndarray, non_zero_init: bool = False):
@@ -93,7 +93,10 @@ class SVM(Model):
         return loss_data
 
     def predict(self, X: np.ndarray):
-        return np.sign(X.dot(self.w))
+        h = X.dot(self.w)
+        h[h >= 0] = 1
+        h[h < 0] = -1
+        return h
 
 
 def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int, rel_conv: float, non_zero_init: bool = False) \
