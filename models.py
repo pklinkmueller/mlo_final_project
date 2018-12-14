@@ -3,7 +3,10 @@ from descent_algorithms import DescentAlgorithm
 from learning_rates import LearningRate
 from abc import ABCMeta, abstractmethod
 
+"""
+Abstract Class for Classification Models
 
+"""
 class Model:
     @abstractmethod
     def __init__(self, descent: DescentAlgorithm, lr: LearningRate,
@@ -31,32 +34,89 @@ class Model:
     def grad(self, X: np.ndarray, y: np.ndarray):
         raise NotImplementedError
 
+"""
+Logistic Regression Model
+
+"""
+
 class LogisticRegression(Model):
     def __init__(self, descent: DescentAlgorithm, lr: LearningRate,
         num_iter: int, batch_size: int, rel_conv: float):
         super().__init__(descent, lr, num_iter, batch_size, rel_conv)
 
+    """
+    Calculates sigmoid of input
+    
+    Parameters:
+    
+    z (np.ndarray) : numpy array
+    
+    Returns:
+        np.ndarray : returns sigmoid calculation 
+    """
+
     @staticmethod
     def __sigmoid(z):
         return 1 / (1 + np.exp(-z))
+    """
+    Calculate Logistic Loss
 
+    Parameters:
+        h (np.ndarray) : numpy array predictions
+        y (np.ndarray) : numpy array ground truths
+    Returns:
+        float: loss value
+    """
     def loss(self, h, y):
         return np.dot(-y.T, np.log(h)) - np.dot((1 - y).T,np.log(1 - h))
+    """
+    Calculate Gradient
 
+    Parameters:
+        X (np.ndarray) : numpy array data
+        y (np.ndarray) : numpy array ground truths
+    Returns:
+        float: gradient
+    """
     def grad(self, X, y):
         h = self.predict(X)
         return np.dot(X.T, (h - y)) / y.shape[0]
+    """
+    Fit the data and get weights
 
+    Parameters:
+        X (np.ndarray) : numpy array input data
+        y (np.ndarray) : numpy array ground truths
+    Returns:
+        np_array: loss/iteration
+    """
     def fit(self, X: np.ndarray, y: np.ndarray):
         self.X = X
         self.y = y
         self.w = np.random.rand(X.shape[1], 1)
         loss_data = train(X, y, self, int(self.num_iter / 10), self.rel_conv)
         return loss_data
+    """
+    Output prediction
 
+    Parameters:
+        X (np.ndarray) : input
+    Returns:
+        float: predicted value
+    """
     def predict(self, X: np.ndarray):
         return self.__sigmoid(np.dot(X, self.w))
+"""
+Train model and output weights
 
+Parameters:
+    X (np.ndarray) : numpy array input data
+    y (np.ndarray) : numpy array ground truths
+    print_iter (int) : Iterations
+    rel_conv (float) : Relative Convergence 
+Returns:
+    np.ndarray: loss/iteration
+"""
 def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int,
     rel_conv: float) -> np.ndarray:
     model.w = np.zeros((X.shape[1], 1))

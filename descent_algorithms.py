@@ -3,6 +3,10 @@ from abc import ABCMeta, abstractmethod
 from math import sqrt
 from random import randint
 
+
+"""
+Abstract class for Descent Algorithms
+"""
 class DescentAlgorithm:
     @abstractmethod
     def update(self, model, X, y):
