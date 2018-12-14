@@ -145,7 +145,10 @@ class SVM(Model):
         self.X = X
         self.y = y
         self.w = np.random.rand(X.shape[1], 1)*100.
+        start_time = time.time()
         loss_data = train(X, y, self, int(self.num_iter / 10), self.rel_conv)
+        self.time = time.time()-start_time
+        print('Runtime:{a:.5f} secs.'.format(a=self.time))
         return loss_data
 
     def predict(self, X: np.ndarray):
