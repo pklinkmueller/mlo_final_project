@@ -5,7 +5,15 @@ from random import randint
 
 
 """
-Abstract class for Descent Algorithms
+Descent Algorithms
+
+Functions:
+    update():
+    
+    Parameters: 
+    model (Model): passed in model
+    X (np.ndarray): input data
+    y (np.ndarray): input ground truths
 """
 class DescentAlgorithm:
     @abstractmethod
