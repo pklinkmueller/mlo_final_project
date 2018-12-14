@@ -5,7 +5,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from pandas import DataFrame
 
 
-def check_accuracy_logistic(model, X, y):
+def check_accuracy(model, X, y):
     num_samples, _ = X.shape
     accurate = 0
 
