@@ -1,5 +1,4 @@
-# mlo_final_project
-Final project for Machine Learning: Optimization
+##Machine Learning Optimization Final Project
 
 ## Group Members
 Peter Klinkmueller
@@ -14,8 +13,8 @@ Jason Zhang
 Comparing convergence rate, runtime, and accuracy for
   - Gradient Descent [DONE]
   - Nesterov's Accelerated Gradient Descent [DONE]
-  - Mirror Descent [UNIMPLEMENTED]
+  - Mirror Descent [Done]
   - Stochastic Gradient Descent [DONE]
   - Stochastic Variance Reduced Gradient (SVRG) [DONE]
 
-with logistic regression [DONE] and SVD [UNIMPLEMENTED] and L-2/L-1 regularization [UNIMPLEMENTED].
+with Logistic Regression [DONE] and SVD [UNIMPLEMENTED] and L-2/L-1 regularization [UNIMPLEMENTED].
