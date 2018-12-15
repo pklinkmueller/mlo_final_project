@@ -178,7 +178,8 @@ def train(X: np.ndarray, y: np.ndarray, model: Model, print_iter: int,
         if (i % print_iter == 0) and verbose:
             print('Iter: {:8} train loss: {:.3f}'.format(i, float(loss_data[i])))
         if (i > 0) and ((abs(loss_data[i] - loss_data[i-1]) / loss_data[i]) < rel_conv):
-            print('Converged in {} iterations.'.format(i))
+            if verbose:
+                print('Converged in {} iterations.'.format(i))
             break
     return loss_data
 
